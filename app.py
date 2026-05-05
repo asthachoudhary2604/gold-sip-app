@@ -3,15 +3,24 @@ import streamlit as st
 st.title("🪙 Goal-Based Gold SIP")
 
 target_grams = st.number_input("Target Gold (grams)", value=5.0)
-sip_amount = st.number_input("Monthly SIP (₹)", value=3000.0)
+frequency = st.selectbox("SIP Frequency", ["Daily", "Weekly", "Monthly"])
+sip_amount = st.number_input(f"{frequency} SIP Amount (₹)", value=3000.0)
 months = st.slider("Duration (months)", 1, 12, 5)
 
 prices = [15000, 15200, 14800, 15500, 16000, 15800, 16200, 15900, 16100, 16300, 16500, 16700]
 
+# Convert duration into number of investments
+if frequency == "Daily":
+    total_investments = months * 30
+elif frequency == "Weekly":
+    total_investments = months * 4
+else:
+    total_investments = months
+
 total_grams = 0
 
-for i in range(months):
-    grams_bought = sip_amount / prices[i]
+for i in range(int(total_investments)):
+    grams_bought = sip_amount / prices[i % len(prices)]
     total_grams += grams_bought
 
 progress = min((total_grams / target_grams) * 100, 100)
@@ -45,5 +54,3 @@ if progress >= 50:
     st.success("On Track ✅")
 else:
     st.warning("Behind ⚠️")
-
-
